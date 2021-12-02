@@ -65,7 +65,7 @@ if (isset($_GET['editid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Department Setup</title>
 
     <link rel="stylesheet" href="../assets/main.d810cf0ae7f39f28f336.css">
 
@@ -87,7 +87,7 @@ if (isset($_GET['editid'])) {
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
                                 <div>Department Setup
-                                    <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div>
+                                    <!-- <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div> -->
                                 </div>
                             </div>
                         </div>

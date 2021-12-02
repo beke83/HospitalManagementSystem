@@ -20,7 +20,7 @@ if (isset($_GET['delid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Treatment Record</title>
+    <title>Treatment Record</title>
 
     <link rel="stylesheet" href="../assets/main.d810cf0ae7f39f28f336.css">
 </head>
@@ -39,7 +39,7 @@ if (isset($_GET['delid'])) {
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
                                 <div>Treatment Records
-                                    <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div>
+                                    <!-- <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div> -->
                                 </div>
                             </div>
                         </div>
@@ -52,12 +52,12 @@ if (isset($_GET['delid'])) {
                                         <table style="width: 100%" id="example" class="table table-hover table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <td>Treatment Type</td>
-                                                    <td>Patient detail</td>
-                                                    <td>Doctor</td>
-                                                    <td>Treatment Description</td>
-                                                    <td>Treatment Date</td>
-                                                    <td>Treatment Time</td>
+                                                    <th>Type of treatment</th>
+                                                    <th>Patient detail</th>
+                                                    <th>Doctor</th>
+                                                    <th>Treatment Description</th>
+                                                    <th>Treatment Date</th>
+                                                    <th>Treatment Time</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -89,7 +89,7 @@ if (isset($_GET['delid'])) {
                                                             <td>&nbsp;$rsdoc[doctorLastname]</td>
                                                             <td>&nbsp;$rs[treatment_description]</td>
                                                             <td>&nbsp;$rs[treatment_date]</td>
-                                                            <td>&nbsp;$rs[treatment_time]</td>;
+                                                            <td>&nbsp;$rs[treatment_time]</td>
 
                                                     </tr>";
                                                 }

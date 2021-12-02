@@ -6,14 +6,14 @@ confirm_login(); ?>
 <?php
 if (isset($_POST['submit'])) {
     if (isset($_GET['editid'])) {
-        $query = "UPDATE appointment SET patientid='$_POST[select4]',departmentid='$_POST[select5]',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[time]',doctorid='$_POST[select6]',status='$_POST[select]' WHERE appointmentid='$_GET[editid]'";
+        $query = "UPDATE appointment_tbl SET patientid='$_POST[select4]',departmentid='$_POST[select5]',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[time]',doctorid='$_POST[select6]',status='$_POST[select]' WHERE appointmentid='$_GET[editid]'";
         if ($execute = mysqli_query($db_connect, $query)) {
             echo "<script>alert('appointment record updated successfully...');</script>";
         } else {
             echo mysqli_error($db_connect);
         }
     } else {
-        $query = "INSERT INTO appointment(patientid,departmentid,appointmentdate,appointmenttime,doctorid,status) values('$_POST[select4]','$_POST[select5]','$_POST[appointmentdate]','$_POST[time]','$_POST[select6]','$_POST[select]')";
+        $query = "INSERT INTO appointment_tbl(patientid,departmentid,appointmentdate,appointmenttime,doctorid,status) values('$_POST[select4]','$_POST[select5]','$_POST[appointmentdate]','$_POST[time]','$_POST[select6]','$_POST[select]')";
         if ($execute = mysqli_query($db_connect, $query)) {
             echo "<script>alert('Appointment record inserted successfully...');</script>";
         } else {
@@ -22,7 +22,7 @@ if (isset($_POST['submit'])) {
     }
 }
 if (isset($_GET['editid'])) {
-    $query = "SELECT * FROM appointment WHERE appointmentid='$_GET[editid]' ";
+    $query = "SELECT * FROM appointment_tbl WHERE id='$_GET[editid]' ";
     $execute = mysqli_query($db_connect, $query);
     $rsedit = mysqli_fetch_array($execute);
 }
@@ -37,7 +37,7 @@ if (isset($_GET['editid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Report</title>
+    <title>Patient Appointment Report</title>
 
     <link rel="stylesheet" href="../assets/main.d810cf0ae7f39f28f336.css">
 </head>
@@ -88,18 +88,7 @@ if (isset($_GET['editid'])) {
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="card">
-                                        <div id="headingFour" class="card-header">
-                                            <button type="button" data-toggle="collapse" data-target="#collapseOne4" aria-expanded="false" aria-controls="collapseFour" class="text-left m-0 p-0 btn btn-link btn-block">
-                                                <h5 class="m-0 p-0">Prescription Record</h5>
-                                            </button>
-                                        </div>
-                                        <div data-parent="#accordion" id="collapseOne4" class="collapse">
-                                            <div class="card-body">
-                                                <?php include("prescriptiondetail.php"); ?>
-                                            </div>
-                                        </div>
-                                    </div> -->
+
                                     <div class="card">
                                         <div id="headingFive" class="card-header">
                                             <button type="button" data-toggle="collapse" data-target="#collapseOne5" aria-expanded="false" aria-controls="collapseFive" class="text-left m-0 p-0 btn btn-link btn-block">

@@ -10,33 +10,49 @@ if (isset($_POST['submit'])) {
     $Department = mysqli_real_escape_string($db_connect, $_POST["department"]);
     $DateOfAppointment = mysqli_real_escape_string($db_connect, $_POST["appointmentdate"]);
     $TimeOfAppointment = mysqli_real_escape_string($db_connect, $_POST["appointmenttime"]);
-    $Doctor = mysqli_real_escape_string($db_connect, $_POST["doctor"]);
-    $ReasonOfAppointment = mysqli_real_escape_string($db_connect, $_POST["app_reason"]);
+    $Doctor = mysqli_real_escape_string($db_connect, $_POST["doctorid"]);
+    //$ReasonOfAppointment = mysqli_real_escape_string($db_connect, $_POST["app_reason"]);
     $Room = mysqli_real_escape_string($db_connect, $_POST["room"]);
     $AppointmentType = mysqli_real_escape_string($db_connect, $_POST["apptype"]);
+    $Reason = mysqli_real_escape_string($db_connect, $_POST["app_reason"]);
+    $ApprovedBy =
+        mysqli_real_escape_string($db_connect, $_POST["approvedby"]);
+    $Status = mysqli_real_escape_string($db_connect, $_POST["status"]);
+
 
     if (isset($_GET['editid'])) {
         $query = "UPDATE patient_tbl SET status='Active' WHERE id='$_GET[patientid]'";
         $execute = mysqli_query($db_connect, $query);
         //$roomid = 0;
 
-        $query = "UPDATE appointment_tbl SET departmentid='$_POST[department]',doctorid='$_POST[doctor]',status='Approved',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[appointmenttime]',roomid='$_POST[room]', appointmenttype='$_POST[apptype]' WHERE id='$_GET[editid]'";
-        if ($execute = mysqli_query($db_connect, $query)) {
-            //$roomid = $_POST[select3];
-            $billtype = "Room Rent";
-            include("insertbillingrecord.php");
-            $_SESSION["SuccessMessage"] = "Appointment Approved";
+        $query = "INSERT INTO doctor_appointment_tbl(patientid,departmentid,appointmentdate,appointmenttime,doctorid,reason,appointmenttype,status) VALUES('$Patient','$Department','$DateOfAppointment','$TimeOfAppointment','$Doctor','$Reason','$AppointmentType','$Status');";
+        $query .= "UPDATE appointment_tbl set status='Forwarded to Doctor' WHERE id=$_GET[editid];";
+        $Execute = mysqli_multi_query($db_connect, $query);
+        if ($Execute) {
+            $_SESSION["SuccessMessage"] = "Appointment forwarded to doctor";
             Redirect_to("viewPendingAppointment.php");
-            //echo "<script>alert('appointment record updated successfully...');</script>";
-            //echo "<script>window.location='patientreport.php?patientid=$_GET[patientid]&appointmentid=$_GET[editid]';</script>";
-
         } else {
-            $_SESSION["ErrorMessage"] = "Error approving appointment";
+            $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
             Redirect_to("viewPendingAppointment.php");
         }
+
+        // $query = "UPDATE appointment_tbl SET departmentid='$_POST[department]',doctorid='$_POST[doctor]',status='Approved',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[appointmenttime]',roomid='$_POST[room]', appointmenttype='$_POST[apptype]', approvedby='$_POST[approvedby]' WHERE id='$_GET[editid]'";
+        // if ($execute = mysqli_query($db_connect, $query)) {
+        //     //$roomid = $_POST[select3];
+        //     $billtype = "Room Rent";
+        //     include("insertbillingrecord.php");
+        //     $_SESSION["SuccessMessage"] = "Appointment Approved";
+        //     Redirect_to("viewPendingAppointment.php");
+        //     //echo "<script>alert('appointment record updated successfully...');</script>";
+        //     //echo "<script>window.location='patientreport.php?patientid=$_GET[patientid]&appointmentid=$_GET[editid]';</script>";
+        // } else {
+        //     $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
+        //     Redirect_to("viewPendingAppointment.php");
+        // }
     } else {
         $query = "UPDATE patient_tbl SET status='Active' WHERE id='$_POST[id]'";
         $execute = mysqli_query($db_connect, $query);
+
 
         $query = "INSERT INTO appointment_tbl(patientid,roomid,appointmenttype,departmentid,appointmentdate,appointmenttime,doctorid,status) values('$_POST[select2]','$_POST[select4]','4','$_POST[apptype]','$_POST[select5]','$_POST[appointmentdate]','$_POST[time]','$_POST[select6]','$_POST[select]')";
         if ($execute = mysqli_query($db_connect, $query)) {
@@ -61,7 +77,7 @@ if (isset($_GET['editid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apointment Approval</title>
+    <title>Forward Apointment</title>
 
     <link rel="stylesheet" href="../assets/main.d810cf0ae7f39f28f336.css">
 </head>
@@ -79,7 +95,7 @@ if (isset($_GET['editid'])) {
                                 <div class="page-title-icon">
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
-                                <div>Appointment Approval Process
+                                <div>Forward Appointment Process
                                     <!-- <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div> -->
                                 </div>
                             </div>
@@ -92,21 +108,21 @@ if (isset($_GET['editid'])) {
                                 echo SuccessMessage(); ?>
                                 <div class="main-card mb-3 card">
                                     <div class="card-body">
-                                        <h5 class="card-title">Appointment Approval Form</h5>
+                                        <h5 class="card-title">Forward Appointment Approval Form</h5>
                                         <form action="" method="POST">
                                             <div class="position-relative form-group">
                                                 <div class="form-row">
                                                     <div class="col-md-6">
                                                         <label>Patient</label>
                                                         <?php
-                                                        if (isset($_GET['patientid'])) {
-                                                            $querypatient = "SELECT * FROM patient_tbl WHERE id='$_GET[patientid]'";
+                                                        if (isset($_GET['id'])) {
+                                                            $querypatient = "SELECT * FROM patient_tbl WHERE id='$_GET[id]'";
                                                             $executepatient = mysqli_query($db_connect, $querypatient);
                                                             $rspatient = mysqli_fetch_array($executepatient);
                                                             //echo $rspatient['firstname'] . $rspatient['lastname'] . " (Patient ID - $rspatient[id])";
                                                             // echo "<input type='hidden' name='patient' value='$rspatient[id]'>";
                                                             echo "
-                                                                <select class='mb-2 form-control' name='patient' disabled>
+                                                                <select class='mb-2 form-control' name='patient'>
                                                                     <option value='$rspatient[id]' selected>$rspatient[firstname] - $rspatient[lastname]</option>
                                                                 </select>
                                                             ";
@@ -157,8 +173,9 @@ if (isset($_GET['editid'])) {
                                                         <input name="appointmenttime" id="appointmenttime" value="<?php if (isset($_GET['editid'])) echo $rsedit['appointmenttime']; ?>" type="time" class="form-control" />
                                                     </div>
                                                 </div>
+
                                                 <label>Doctor</label>
-                                                <select class="mb-2 form-control" name="doctor" id="doctor">
+                                                <select class="mb-2 form-control" name="doctorid" id="doctor">
 
                                                     <?php
                                                     $querydoctor = "SELECT * FROM doctor_tbl WHERE status='Active'";
@@ -176,7 +193,7 @@ if (isset($_GET['editid'])) {
                                                 <label>Reason</label>
                                                 <textarea name="app_reason" class="form-control"><?php if (isset($_GET['editid'])) echo $rsedit['app_reason']; ?></textarea>
 
-                                                <label>Room</label>
+                                                <!-- <label>Room</label>
                                                 <select class="mb-2 form-control" name="room" id="room">
                                                     <option value="">Select Room</option>
                                                     <?php
@@ -190,7 +207,7 @@ if (isset($_GET['editid'])) {
                                                         }
                                                     }
                                                     ?>
-                                                </select>
+                                                </select> -->
 
                                                 <label>Appointment Type</label>
                                                 <select class="mb-2 form-control" name="apptype" id="apptype">
@@ -207,11 +224,38 @@ if (isset($_GET['editid'])) {
                                                     }
                                                     ?>
                                                 </select>
+                                                <!-- <label>Approved by</label>
+                                                <select class="mb-2 form-control" name="approvedby" id="approvedby">
+                                                    <option value="">Select</option>
+                                                    <?php
+                                                    $query = "SELECT * FROM nurse_tbl WHERE status='Active' and nurse_tbl.id=$_SESSION[id]";
+                                                    $execute = mysqli_query($db_connect, $query);
+                                                    while ($rsapprovedby = mysqli_fetch_array($execute)) {
+                                                        if ($rsapprovedby['id'] == $rsedit['id']) {
+                                                            echo "<option value='$rsapprovedby[id]' selected>$approvedby[nurseLastname]</option>";
+                                                        } else {
+                                                            echo "<option value='$rsapprovedby[id]'>$rsapprovedby[nurseLastname]</option>";
+                                                        }
+                                                    }
+                                                    ?>
+                                                </select> -->
 
+                                                <label>Status</label>
+                                                <select class="mb-2 form-control" name="status" id="status">
+                                                    <option value="">Select Status</option>
+                                                    <?php
+                                                    $arr = array("Pending");
+                                                    foreach ($arr as $val) {
+                                                        if ($val == $rsedit['status']) {
+                                                            echo "<option value='$val' selected>$val</option>";
+                                                        } else {
+                                                            echo "<option value='$val'>$val</option>";
+                                                        }
+                                                    }
+                                                    ?>
+                                                </select>
                                                 <br />
-
-                                                <button type="submit" name="submit" id="submit" class="mt-1 btn btn-success pull-right btn-block">Approve</button>
-
+                                                <button type="submit" name="submit" id="submit" class="mt-1 btn btn-success pull-right btn-block">Forward</button>
                                             </div>
                                         </form>
                                     </div>

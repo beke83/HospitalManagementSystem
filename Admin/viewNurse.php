@@ -5,7 +5,7 @@ confirm_login(); ?>
 
 <?php
 if (isset($_GET['delid'])) {
-    $query = "DELETE FROM doctor_tbl WHERE id='$_GET[delid]'";
+    $query = "DELETE FROM nurse_tbl WHERE id='$_GET[delid]'";
     $execute = mysqli_query($db_connect, $query);
     if (mysqli_affected_rows($db_connect) == 1) {
 
@@ -22,7 +22,7 @@ if (isset($_GET['delid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Doctor</title>
+    <title>View Nurses</title>
 
     <link rel="stylesheet" href="../assets/main.d810cf0ae7f39f28f336.css">
 </head>
@@ -40,7 +40,7 @@ if (isset($_GET['delid'])) {
                                 <div class="page-title-icon">
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
-                                <div>Doctor Record
+                                <div>Nurse Record
                                     <!-- <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div> -->
                                 </div>
                             </div>
@@ -57,12 +57,11 @@ if (isset($_GET['delid'])) {
                                             <thead>
                                                 <tr>
                                                     <th>Edit</th>
-                                                    <th>Doctor Name</th>
+                                                    <th>Nurse Name</th>
                                                     <th>Department</th>
                                                     <th>Email Address</th>
                                                     <th>Phone Number</th>
                                                     <th>Gender</th>
-                                                    <th>Consultancy Fee</th>
                                                     <th>Education</th>
                                                     <th>Experience</th>
                                                     <th>Status</th>
@@ -72,7 +71,7 @@ if (isset($_GET['delid'])) {
                                             <tbody>
                                                 <?php
                                                 global $db_connect;
-                                                $query = "SELECT * FROM doctor_tbl";
+                                                $query = "SELECT * FROM nurse_tbl";
                                                 $execute = mysqli_query($db_connect, $query);
                                                 while ($rs = mysqli_fetch_array($execute)) {
 
@@ -83,23 +82,22 @@ if (isset($_GET['delid'])) {
                                                     echo "
                                                         <tr>
                                                             <td>
-                                                            <a href='addDoctor.php?editid=$rs[id]'>
+                                                            <a href='addNurse.php?editid=$rs[id]'>
                                                                 <button class='btn btn-info btn-sm float-left'>
                                                                     <i class='fa fa-edit'></i>
                                                                 </button>
                                                                 </a>
                                                             </td>
-                                                            <td>&nbsp;$rs[doctorFirstname] $rs[doctorLastname]</td>
+                                                            <td>&nbsp;$rs[nurseFirstname] $rs[nurseLastname]</td>
                                                             <td>&nbsp;$rsdept[departmentName]</td>
                                                             <td>&nbsp;$rs[emailAddress]</td>
                                                             <td>&nbsp;$rs[phoneNumber]</td>
                                                             <td>&nbsp;$rs[gender]</td>
-                                                            <td>&nbsp;$rs[consultancyFee]</td>
                                                             <td>&nbsp;$rs[education]</td>
                                                             <td>&nbsp;$rs[experience]</td>
                                                             <td>&nbsp;$rs[status]</td>
                                                             <td>                         
-                                                                 <a href='viewDoctor.php?delid=$rs[id]'>
+                                                                 <a href='viewNurse.php?delid=$rs[id]'>
                                                                  <button class='btn btn-danger btn-sm float-right'>
                                                                      <i class='fa fa-trash'></i>
                                                                  </button>

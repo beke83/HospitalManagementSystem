@@ -88,7 +88,7 @@ if (isset($_GET['editid'])) {
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
                                 <div>Treatment Type
-                                    <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div>
+                                    <!-- <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div> -->
                                 </div>
                             </div>
                         </div>

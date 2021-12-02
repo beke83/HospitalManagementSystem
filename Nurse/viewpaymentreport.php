@@ -13,7 +13,7 @@ if(isset($_GET['delid']))
 ?>
  <section class="container">
 <?php
-$querybilling_records ="SELECT * FROM billing_tbl WHERE appointmentid='$_GET[id]'";
+$querybilling_records ="SELECT * FROM billing_tbl WHERE appointmentid='$_GET[appointmentid]'";
 $executebilling_records = mysqli_query($db_connect,$querybilling_records);
 $rsbilling_records = mysqli_fetch_array($executebilling_records);
 ?>

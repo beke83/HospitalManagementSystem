@@ -1,11 +1,22 @@
 <?php include("../include/db_connect.php") ?>
+<!-- function to connect to the database -->
 <?php include("../include/session.php") ?>
 <?php include("../include/Functions.php");
+//function to prevent unauthorized login
 confirm_login();
 ?>
 
 <?php
+
+//These are inbuilt mail functions used for sending email
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception; // used to handle errors or exception
+use PHPMailer\PHPMailer\SMTP; // smtp is used to transfer email messages and attatchments
+
 if (isset($_POST['submit'])) {
+
+    // variable declaration to fill the form
+
     $Firstname = mysqli_real_escape_string($db_connect, $_POST["firstname"]);
     $Lastname = mysqli_real_escape_string($db_connect, $_POST["lastname"]);
     $Gender = mysqli_real_escape_string($db_connect, $_POST["gender"]);
@@ -21,80 +32,107 @@ if (isset($_POST['submit'])) {
     $DateTime;
     $Admin = $_SESSION[$_POST['lastname']];
 
+    // end of variable declaration
+
+    // code to edit the admin values.
     if (isset($_GET['editid'])) {
         $query = "UPDATE admin_tbl SET firstname='$_POST[firstname]',lastname='$_POST[lastname]',gender='$_POST[gender]', emailAddress='$_POST[emailAddress]',password='$_POST[password]', confirmPassword='$_POST[confirmPassword]', address='$_POST[address]', phoneNumber='$_POST[phoneNumber]',status='$_POST[status]' WHERE id='$_GET[editid]'";
+
         if ($Execute = mysqli_query($db_connect, $query)) {
 
             $_SESSION["SuccesMessage"] = "Record Updated";
-            //Redirect_to("addAdmin.php");
+            Redirect_to("addAdmin.php");
         } else {
 
             $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
-            //Redirect_to("addAdmin.php");
+            Redirect_to("addAdmin.php");
         }
     } else if (
+        // if field is empty show the error below
         empty($Firstname) || empty($Lastname) || empty($Gender) || empty($EmailAddress) || empty($Password)
         || empty($ConfirmPassword) || empty($PhoneNumber) || empty($Address) || empty($Status)
     ) {
         $_SESSION["ErrorMessage"] = "All Field must be Filled";
         Redirect_to("addAdmin.php");
     } else if ($Password != $ConfirmPassword) {
-
+        // if password != confirmPassword show error.
         $_SESSION["ErrorMessage"] = "Password does'not match";
         Redirect_to("addAdmin.php");
     } else {
+        // code to first insert into the database           258
+
         global $db_connect;
         $query = "INSERT INTO admin_tbl(firstname,lastname,gender,emailAddress,password,confirmPassword,phoneNumber,address,status,addedBy,timeAdded)
         VALUES('$Firstname', '$Lastname', '$Gender', '$EmailAddress', '$Password', '$ConfirmPassword', '$PhoneNumber', '$Address' ,'$Status', '$Admin', '$DateTime')";
 
         $Execute = mysqli_query($db_connect, $query);
 
+        // if the mysql query is successful then the mail is sent to the registered user.          108
+
         if ($Execute) {
 
-            require '../mailer/PHPMailerAutoload.php';
-            require '../mailer/credentials.php';
+            // call additional inbuilt functions required to send mail
+            require '../PHPMailer-6.5.0/src/PHPMailer.php';
+            require '../PHPMailer-6.5.0/src/Exception.php';
+            require '../PHPMailer-6.5.0/src/SMTP.php';
+            require '../PHPMailer-6.5.0/src/credentials.php';
 
-            $mail = new PHPMailer;
+            $mail = new PHPMailer();
+
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            );
 
             //$mail->SMTPDebug = 3;                               // Enable verbose debug output
 
-            $mail->isSMTP();                                      // Set mailer to use SMTP
+            $mail->isSMTP(true);
+            // Set mailer to use SMTP
             $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
-            $mail->SMTPAuth = true;                               // Enable SMTP authentication
-            $mail->Username = EMAIL;                 // SMTP username
-            $mail->Password = PASS;                           // SMTP password
-            $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-            $mail->Port = 587;                                    // TCP port to connect to
+            $mail->SMTPAuth = true;                            // Enable SMTP authentication
+            $mail->Username = 'worktestmail9@gmail.com';                 // SMTP username
+            $mail->Password = 'yahoo@WorkTest';                     // SMTP password
+            $mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
+            $mail->Port = 465;
+            // TCP port to connect to
 
-            $mail->setFrom(EMAIL, 'HMS');
-            $mail->addAddress($_POST['emailAddress']);     // Add a recipient
-            $mail->addReplyTo(EMAIL);
+            $mail->setFrom(EMAIL, 'HospitalManagementSystem');
+            $mail->addAddress($_POST['emailAddress']); //the email address is gotten from the form that is filled    // Add a recipient
+            $mail->addReplyTo(EMAIL, 'HMS');
 
             // $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
             //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
-            $mail->isHTML(true);                                  // Set email format to HTML
+            $mail->isHTML(true);  // this is the function that makes it possible to embed html code into the mail function                            
 
             $mail->Subject = "Admin Registration";
-            $base_url = "C:\wamp64\www\HospitalManagementSystem\Admin\verify.php";
             $mail->Body = "
-			<p>Hi " . $_POST['firstname'] . ",</p>
+			<p style='font-size:xx-large'>Hi " . $_POST['firstname'] . $_POST['lastname'] . ",</p>
             <p>You have been registered as an admin. Your login info: </p> 
             <p>Email Address: " . ($EmailAddress) . "</p>
             <p>Password: " . ($Password) . "</p>
+            <p>Default password is " . ($Password) . " Login and change your password as soon as possible</p>
             <p>Best Regards,<br />Hospital Management System</p>
 			";
             $mail->AltBody = "Message";
 
             if (!$mail->send()) {
-                echo 'Message could not be sent.';
-                echo 'Mailer Error: ' . $mail->ErrorInfo;
+                // echo 'Message could not be sent.';
+                // echo 'Mailer Error: ' . $mail->ErrorInfo;
+                $_SESSION["ErrorMessage"] = $mail->ErrorInfo;
+                Redirect_to("addAdmin.php");
             } else {
-                echo 'Register Done, Please check your mail';
+                //echo 'Register Done, Please check your mail';
+                $_SESSION["SuccessMessage"] = "Admin registered, Please check your mail";
+                Redirect_to("addAdmin.php");
             }
         }
     }
 }
 
+// method to delete from the database
 if (isset($_GET['delid'])) {
     $query = "DELETE FROM admin_tbl WHERE id='$_GET[delid]'";
     $Execute = mysqli_query($db_connect, $query);
@@ -108,6 +146,7 @@ if (isset($_GET['delid'])) {
 ?>
 
 <?php
+//method to edit a value from the database
 if (isset($_GET['editid'])) {
     $query = "SELECT * FROM admin_tbl WHERE id='$_GET[editid]' ";
     $Execute = mysqli_query($db_connect, $query);
@@ -221,10 +260,12 @@ if (isset($_GET['editid'])) {
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                <!-- code to display the values on the table -->
                                                 <?php
                                                 global $db_connect;
                                                 $query = "SELECT * FROM admin_tbl ORDER BY id desc";
                                                 $Execute = mysqli_query($db_connect, $query);
+                                                // it gets the values in an array format from the database and assigns the value to $rs
                                                 while ($rs = mysqli_fetch_array($Execute)) {
                                                     echo "
                                                         <tr>

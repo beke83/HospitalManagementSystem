@@ -52,7 +52,6 @@ if (isset($_GET['approveid'])) {
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
                                 <div>Pending Appointment
-                                    <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div>
                                 </div>
                             </div>
 

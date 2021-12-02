@@ -5,12 +5,11 @@ confirm_login(); ?>
 
 <?php
 if (isset($_POST['submit'])) {
-    $DoctorFirstname = mysqli_real_escape_string($db_connect, $_POST["doctorFirstname"]);
-    $DoctorLastname = mysqli_real_escape_string($db_connect, $_POST["doctorLastname"]);
+    $NurseFirstname = mysqli_real_escape_string($db_connect, $_POST["nurseFirstname"]);
+    $NurseLastname = mysqli_real_escape_string($db_connect, $_POST["nurseLastname"]);
     $Education = mysqli_real_escape_string($db_connect, $_POST["education"]);
     $Qualification = mysqli_real_escape_string($db_connect, $_POST["qualification"]);
     $Experience = mysqli_real_escape_string($db_connect, $_POST["experience"]);
-    $ConsultancyFee = mysqli_real_escape_string($db_connect, $_POST["consultancyFee"]);
     $Department = mysqli_real_escape_string($db_connect, $_POST["department"]);
     $Gender = mysqli_real_escape_string($db_connect, $_POST["gender"]);
     $Address = mysqli_real_escape_string($db_connect, $_POST["address"]);
@@ -21,41 +20,38 @@ if (isset($_POST['submit'])) {
     $Status = mysqli_real_escape_string($db_connect, $_POST["status"]);
 
     if (isset($_GET['editid'])) {
-        $query = "UPDATE doctor_tbl SET doctorFirstname='$_POST[doctorFirstname]',doctorLastname='$_POST[doctorLastname]', education='$_POST[education]', 
-        qualification='$_POST[qualification]', experience='$_POST[experience]', consultancyFee='$_POST[consultancyFee]', departmentid='$_POST[department]', gender='$_POST[gender]', 
-        address='$_POST[address]', city='$_POST[city]', phoneNumber='$_POST[phoneNumber]', emailAddress='$_POST[emailAddress]', password='$_POST[password]', status='$_POST[status]' WHERE id='$_GET[editid]'";
+        $query = "UPDATE nurse_tbl SET nurseFirstname='$_POST[nurseFirstname]',nurseLastname='$_POST[nurseLastname]', education='$_POST[education]', 
+        qualification='$_POST[qualification]', experience='$_POST[experience]', departmentid='$_POST[department]', gender='$_POST[gender]', address='$_POST[address]', city='$_POST[city]', phoneNumber='$_POST[phoneNumber]', emailAddress='$_POST[emailAddress]', password='$_POST[password]', status='$_POST[status]' WHERE id='$_GET[editid]'";
         if ($Execute = mysqli_query($db_connect, $query)) {
 
             $_SESSION["SuccessMessage"] = "Record Updated";
-            Redirect_to("viewDoctor.php");
+            Redirect_to("viewNurse.php");
         } else {
 
             $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
-            Redirect_to("viewDoctor.php");
+            Redirect_to("viewNurse.php");
         }
     } else if (
-        empty($DoctorFirstname) || empty($DoctorLastname) || empty($Education) || empty($Qualification) || empty($Experience) ||
-        empty($ConsultancyFee) || empty($Department) || empty($Gender) || empty($Address) || empty($City) || empty($PhoneNumber) ||
-        empty($EmailAddress) || empty($Password) || empty($Status)
+        empty($NurseFirstname) || empty($NurseLastname) || empty($Education) || empty($Qualification) || empty($Experience) || empty($Department) || empty($Gender) || empty($Address) || empty($City) || empty($PhoneNumber) || empty($EmailAddress) || empty($Password) || empty($Status)
     ) {
 
         $_SESSION["ErrorMessage"] = "All Field must be Filled";
-        Redirect_to("addDoctor.php");
+        Redirect_to("addNurse.php");
     } else if (strlen($Password) < 4) {
         $_SESSION["ErrorMessage"] = "Password atleast 6 ";
-        Redirect_to("addDoctor.php");
+        Redirect_to("addNurse.php");
     } else {
         global $db_connect;
-        $query = "INSERT INTO doctor_tbl(doctorFirstname,doctorLastname,education,qualification,experience,consultancyFee,departmentid,gender,address,city,phoneNumber,emailAddress,password,status)
-        VALUES('$DoctorFirstname', '$DoctorLastname', '$Education', '$Qualification', '$Experience', '$ConsultancyFee', '$Department',
+        $query = "INSERT INTO nurse_tbl(nurseFirstname,nurseLastname,education,qualification,experience,departmentid,gender,address,city,phoneNumber,emailAddress,password,status)
+        VALUES('$NurseFirstname', '$NurseLastname', '$Education', '$Qualification', '$Experience', '$Department',
         '$Gender', '$Address', '$City', '$PhoneNumber', '$EmailAddress', '$Password', '$Status')";
         $Execute = mysqli_query($db_connect, $query);
         if ($Execute) {
-            $_SESSION["SuccessMessage"] = "Doctor added successfully";
-            Redirect_to("addDoctor.php");
+            $_SESSION["SuccessMessage"] = "Nurse added successfully";
+            Redirect_to("addNurse.php");
         } else {
             $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
-            Redirect_to("addDoctor.php");
+            Redirect_to("addNurse.php");
         }
     }
 }
@@ -63,7 +59,7 @@ if (isset($_POST['submit'])) {
 
 <?php
 if (isset($_GET['editid'])) {
-    $query = "SELECT * FROM doctor_tbl WHERE id='$_GET[editid]' ";
+    $query = "SELECT * FROM nurse_tbl WHERE id='$_GET[editid]' ";
     $execute = mysqli_query($db_connect, $query);
     $rsedit = mysqli_fetch_array($execute);
 }
@@ -94,7 +90,7 @@ if (isset($_GET['editid'])) {
                                 <div class="page-title-icon">
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
-                                <div>Doctor Setup
+                                <div>Nurse Setup
                                     <!-- <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div> -->
                                 </div>
                             </div>
@@ -107,17 +103,17 @@ if (isset($_GET['editid'])) {
                                 echo SuccessMessage(); ?>
                                 <div class="main-card mb-3 card">
                                     <div class="card-body">
-                                        <h5 class="card-title">Doctor Setup Form</h5>
+                                        <h5 class="card-title">Nurse Setup Form</h5>
                                         <form action="" method="POST">
                                             <div class="position-relative form-group">
                                                 <div class="form-row">
                                                     <div class="col-md-6">
-                                                        <label>Doctor's Firstname</label>
-                                                        <input name="doctorFirstname" id="doctorFirstname" value="<?php if (isset($_GET['editid'])) echo $rsedit['doctorFirstname']; ?>" placeholder="Firstname" type="text" class="form-control" />
+                                                        <label>Nurse's Firstname</label>
+                                                        <input name="nurseFirstname" id="nurseFirstname" value="<?php if (isset($_GET['editid'])) echo $rsedit['nurseFirstname']; ?>" placeholder="Firstname" type="text" class="form-control" />
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label>Doctor's Lastname</label>
-                                                        <input name="doctorLastname" id="doctorLastname" value="<?php if (isset($_GET['editid'])) echo $rsedit['doctorLastname']; ?>" placeholder="Lastname" type="text" class="form-control" />
+                                                        <label>Nurse's Lastname</label>
+                                                        <input name="nurseLastname" id="nurseLastname" value="<?php if (isset($_GET['editid'])) echo $rsedit['nurseLastname']; ?>" placeholder="Lastname" type="text" class="form-control" />
                                                     </div>
                                                 </div>
                                                 <div class="position-relative form-group">
@@ -132,11 +128,6 @@ if (isset($_GET['editid'])) {
                                                     <label>Experience(years)</label>
                                                     <input name="experience" id="experience" value="<?php if (isset($_GET['editid'])) echo $rsedit['experience']; ?>" type="text" class="form-control" />
                                                 </div>
-                                                <div class="position-relative form-group">
-                                                    <label>Consultancy Fee</label>
-                                                    <input name="consultancyFee" id="consiltancyFee" value="<?php if (isset($_GET['editid'])) echo $rsedit['consultancyFee']; ?>" type="text" class="form-control" />
-                                                </div>
-
                                                 <label>Department</label>
                                                 <select class="mb-2 form-control" name="department" id="department">
                                                     <option value="">Select department</option>

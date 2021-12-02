@@ -17,14 +17,14 @@ if (isset($_POST['submit'])) {
         $_SESSION["ErrorMessage"] = "Password does'not match";
         Redirect_to("changePassword.php");
     } else {
-        $sql = "UPDATE admin_tbl SET password='$_POST[newpassword]' WHERE password='$_POST[oldpassword]'";
+        $sql = "UPDATE nurse_tbl SET password='$_POST[newpassword]' WHERE password='$_POST[oldpassword]' AND id='$_SESSION[id]'";
         $qsql = mysqli_query($db_connect, $sql);
-        if (mysqli_affected_rows($db_connect) == 1) {
+        if (mysqli_affected_rows($db_connect) >= 1) {
             $_SESSION["SuccessMessage"] = "password updated";
             Redirect_to("changePassword.php");
         } else {
             $_SESSION["ErrorMessage"] = "password failed to update";
-            Redirect_to("changePasword.php");
+            Redirect_to("changePassword.php");
         }
     }
 }
@@ -55,6 +55,7 @@ if (isset($_POST['submit'])) {
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
                                 <div>Change Password
+                                    <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +78,7 @@ if (isset($_POST['submit'])) {
 
                                                 <label>Confirm Password</label>
                                                 <input name="password" id="password" placeholder="confirm password" type="password" class="form-control" />
-
+                                                <br />
                                                 <button type="submit" class="mt-1 btn btn-success pull-right" name="submit" id="submit">Update</button>
 
                                                 <button class="mt-1 btn btn-danger">Cancel</button>

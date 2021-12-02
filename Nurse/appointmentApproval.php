@@ -2,26 +2,97 @@
 <?php include("../include/session.php") ?>
 <?php include("../include/Functions.php");
 confirm_login(); ?>
-
 <?php
+
+//These are inbuilt mail functions used for sending email
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception; // used to handle errors or exception
+use PHPMailer\PHPMailer\SMTP; // smtp is used to transfer email messages and attatchments
+
 if (isset($_POST['submit'])) {
 
     $Patient = mysqli_real_escape_string($db_connect, $_POST["patient"]);
     $Department = mysqli_real_escape_string($db_connect, $_POST["department"]);
     $DateOfAppointment = mysqli_real_escape_string($db_connect, $_POST["appointmentdate"]);
     $TimeOfAppointment = mysqli_real_escape_string($db_connect, $_POST["appointmenttime"]);
-    $Doctor = mysqli_real_escape_string($db_connect, $_POST["doctor"]);
+    $Doctor = mysqli_real_escape_string($db_connect, $_POST["doctorid"]);
     $ReasonOfAppointment = mysqli_real_escape_string($db_connect, $_POST["app_reason"]);
     $Room = mysqli_real_escape_string($db_connect, $_POST["room"]);
     $AppointmentType = mysqli_real_escape_string($db_connect, $_POST["apptype"]);
+    $ApprovedBy =
+        mysqli_real_escape_string($db_connect, $_POST["approvedby"]);
+    $EmailAddress = mysqli_real_escape_string($db_connect, $_POST["emailAddress"]);
 
     if (isset($_GET['editid'])) {
         $query = "UPDATE patient_tbl SET status='Active' WHERE id='$_GET[patientid]'";
         $execute = mysqli_query($db_connect, $query);
         //$roomid = 0;
 
-        $query = "UPDATE appointment_tbl SET departmentid='$_POST[department]',doctorid='$_POST[doctor]',status='Approved',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[appointmenttime]',roomid='$_POST[room]', appointmenttype='$_POST[apptype]' WHERE id='$_GET[editid]'";
+        $query = "UPDATE appointment_tbl SET departmentid='$_POST[department]',doctorid='$_POST[doctorid]',status='Approved',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[appointmenttime]',roomid='$_POST[room]', appointmenttype='$_POST[apptype]', approvedby='$_POST[approvedby]',patientemail='$_POST[emailAddress]' WHERE id='$_GET[editid]'";
         if ($execute = mysqli_query($db_connect, $query)) {
+
+            // call additional inbuilt functions required to send mail
+            require '../PHPMailer-6.5.0/src/PHPMailer.php';
+            require '../PHPMailer-6.5.0/src/Exception.php';
+            require '../PHPMailer-6.5.0/src/SMTP.php';
+            require '../PHPMailer-6.5.0/src/credentials.php';
+
+            $mail = new PHPMailer();
+
+            $mail->SMTPOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                )
+            );
+
+            //$mail->SMTPDebug = 3;                               // Enable verbose debug output
+
+            $mail->isSMTP(true);
+            // Set mailer to use SMTP
+            $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+            $mail->SMTPAuth = true;                            // Enable SMTP authentication
+            $mail->Username = 'worktestmail9@gmail.com';                 // SMTP username
+            $mail->Password = 'yahoo@WorkTest';                     // SMTP password
+            $mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
+            $mail->Port = 465;
+            // TCP port to connect to
+
+            $mail->setFrom(EMAIL, 'HospitalManagementSystem');
+            $mail->addAddress($_POST['emailAddress']); //the email address is gotten from the form that is filled    // Add a recipient
+            $mail->addReplyTo(EMAIL, 'HMS');
+
+            // $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+            //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+            $mail->isHTML(true);  // this is the function that makes it possible to embed html code into the mail function                            
+
+            $mail->Subject = "Hospital Appointment Approved";
+            $mail->Body = "
+			<p style='font-size:xx-large'>Dear " . $_POST['patient'] . ",</p>
+            <p>Your hospital appointment has been approved</p>
+            <p>Find below the appointment detail</p>
+            <p>Appointment With: " . ($_SESSION['id']) . "</p>
+            <p>Department: " . ($Department) . "</p>
+            <p>Date: " . ($DateOfAppointment) . "</p>
+            <p>Time: " . ($TimeOfAppointment) . "</p>
+            <p></p>
+            <p>Thank you for choosing HMS
+            <p>Best Regards,<br />Hospital Management System</p>
+			";
+            $mail->AltBody = "Message";
+
+            if (!$mail->send()) {
+                // echo 'Message could not be sent.';
+                // echo 'Mailer Error: ' . $mail->ErrorInfo;
+                $_SESSION["ErrorMessage"] = $mail->ErrorInfo;
+                Redirect_to("viewPendingAppointment.php");
+            } else {
+                //echo 'Register Done, Please check your mail';
+                $_SESSION["SuccessMessage"] = "Appointment Approved. Mail has been sent";
+                Redirect_to("viewPendingAppointment.php");
+            }
+
             //$roomid = $_POST[select3];
             $billtype = "Room Rent";
             include("insertbillingrecord.php");
@@ -29,9 +100,8 @@ if (isset($_POST['submit'])) {
             Redirect_to("viewPendingAppointment.php");
             //echo "<script>alert('appointment record updated successfully...');</script>";
             //echo "<script>window.location='patientreport.php?patientid=$_GET[patientid]&appointmentid=$_GET[editid]';</script>";
-
         } else {
-            $_SESSION["ErrorMessage"] = "Error approving appointment";
+            $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
             Redirect_to("viewPendingAppointment.php");
         }
     } else {
@@ -158,7 +228,7 @@ if (isset($_GET['editid'])) {
                                                     </div>
                                                 </div>
                                                 <label>Doctor</label>
-                                                <select class="mb-2 form-control" name="doctor" id="doctor">
+                                                <select class="mb-2 form-control" name="doctorid" id="doctor">
 
                                                     <?php
                                                     $querydoctor = "SELECT * FROM doctor_tbl WHERE status='Active'";
@@ -207,6 +277,56 @@ if (isset($_GET['editid'])) {
                                                     }
                                                     ?>
                                                 </select>
+
+                                                <label>Approved by</label>
+                                                <select class="mb-2 form-control" name="approvedby" id="approvedby">
+                                                    <option value="">Select</option>
+                                                    <?php
+                                                    $query = "SELECT * FROM nurse_tbl WHERE status='Active' and nurse_tbl.id=$_SESSION[id]";
+                                                    $execute = mysqli_query($db_connect, $query);
+                                                    while ($rsapprovedby = mysqli_fetch_array($execute)) {
+                                                        if ($rsapprovedby['id'] == $rsedit['id']) {
+                                                            echo "<option value='$rsapprovedby[id]' selected>$approvedby[nurseLastname]</option>";
+                                                        } else {
+                                                            echo "<option value='$rsapprovedby[id]'>$rsapprovedby[nurseLastname]</option>";
+                                                        }
+                                                    }
+                                                    ?>
+                                                </select>
+
+                                                <div class="col-md-12">
+                                                    <label>Patient Email</label>
+                                                    <?php
+                                                    if (isset($_GET['patientid'])) {
+                                                        $querypatient = "SELECT * FROM patient_tbl WHERE id='$_GET[patientid]'";
+                                                        $executepatient = mysqli_query($db_connect, $querypatient);
+                                                        $rspatient = mysqli_fetch_array($executepatient);
+                                                        //echo $rspatient['firstname'] . $rspatient['lastname'] . " (Patient ID - $rspatient[id])";
+                                                        // echo "<input type='hidden' name='patient' value='$rspatient[id]'>";
+                                                        echo "
+                                                                <select class='mb-2 form-control' name='emailAddress'>
+                                                                    <option value='$rspatient[emailAddress]' selected>$rspatient[emailAddress]</option>
+                                                                </select>
+                                                            ";
+                                                    } else {
+                                                    ?>
+                                                        <select class="mb-2 form-control" name="emailAddress">
+                                                            <option value="">Select</option>
+                                                            <?php
+                                                            $querypatient = "SELECT * FROM patient_tbl WHERE status='Active'";
+                                                            $executepatient = mysqli_query($db_connect, $querypatient);
+                                                            while ($rspatient = mysqli_fetch_array($executepatient)) {
+                                                                if ($rspatient['id'] == $rsedit['patientid']) {
+                                                                    echo "<option value='$rspatient[emailAddress]' selected>$rspatient[emailAddress]</option>";
+                                                                } else {
+                                                                    echo "<option value='$rspatient[emailAddress]'>$rspatient[emailAddress]</option>";
+                                                                }
+                                                            }
+                                                            ?>
+                                                        </select>
+
+                                                    <?php } ?>
+                                                </div>
 
                                                 <br />
 

@@ -5,48 +5,45 @@ confirm_login(); ?>
 
 <?php
 if (isset($_POST['submit'])) {
-    $RoomType = mysqli_real_escape_string($db_connect, $_POST["roomtype"]);
-    $RoomNo = mysqli_real_escape_string($db_connect, $_POST["roomno"]);
-    $NumberOfBeds = mysqli_real_escape_string($db_connect, $_POST["noofbeds"]);
-    $RoomTariff = mysqli_real_escape_string($db_connect, $_POST["room_tariff"]);
+    $appointmentTypeName = mysqli_real_escape_string($db_connect, $_POST["appointmentTypeName"]);
     $Status = mysqli_real_escape_string($db_connect, $_POST["status"]);
 
     if (isset($_GET['editid'])) {
-        $query = "UPDATE department_tbl SET departmentName='$_POST[departmentName]', description='$_POST[description]', status='$_POST[status]' WHERE id='$_GET[editid]'";
+        $query = "UPDATE appointment_type_tbl SET appointmentTypeName='$_POST[appointmentTypeName]',status='$_POST[status]' WHERE id='$_GET[editid]'";
         if ($Execute = mysqli_query($db_connect, $query)) {
 
             $_SESSION["SuccessMessage"] = "Record Updated";
-            Redirect_to("addDepartment.php");
+            Redirect_to("addAppointmentType.php");
         } else {
 
             $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
-            Redirect_to("addDepartment.php");
+            Redirect_to("addAppointmentType.php");
         }
-    } else if (empty($RoomType) || empty($RoomNo) || empty($NumberOfBeds) || empty($RoomTariff)) {
+    } else if (empty($appointmentTypeName) || empty($Status)) {
         $_SESSION["ErrorMessage"] = "All Field must be Filled";
-        Redirect_to("addRoom.php");
+        Redirect_to("addAppointmentType.php");
     } else {
         global $db_connect;
-        $query = "INSERT INTO room(roomtype,roomno,noofbeds,room_tariff,status)
-        VALUES('$RoomType', '$RoomNo', '$NumberOfBeds', '$RoomTariff', '$Status')";
+        $query = "INSERT INTO appointment_type_tbl(appointmentTypeName,status)
+        VALUES('$appointmentTypeName', '$Status')";
         $Execute = mysqli_query($db_connect, $query);
         if ($Execute) {
-            $_SESSION["SuccessMessage"] = "Room saved successfully";
-            Redirect_to("addRoom.php");
+            $_SESSION["SuccessMessage"] = "Appointment Type saved successfully";
+            Redirect_to("addAppointmentType.php");
         } else {
             $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
-            Redirect_to("addRoom.php");
+            Redirect_to("addAppointmentType.php");
         }
     }
 }
 
 if (isset($_GET['delid'])) {
-    $query = "DELETE FROM room WHERE id='$_GET[delid]'";
+    $query = "DELETE FROM department_tbl WHERE id='$_GET[delid]'";
     $Execute = mysqli_query($db_connect, $query);
     if (mysqli_affected_rows($db_connect) == 1) {
 
-        $_SESSION["SuccessMessage"] = "Room deleted successfully";
-        Redirect_to("addRoom.php");
+        $_SESSION["SuccessMessage"] = "Department deleted successfully";
+        Redirect_to("addAppointmentType.php");
     }
 }
 
@@ -88,8 +85,8 @@ if (isset($_GET['editid'])) {
                                 <div class="page-title-icon">
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
-                                <div>Room Setup
-                                    <!-- <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div> -->
+                                <div>Appointment Type Setup
+                                    <div class="page-title-subheading">Choose between regular React Bootstrap tables or advanced dynamic ones.</div>
                                 </div>
                             </div>
                         </div>
@@ -101,20 +98,11 @@ if (isset($_GET['editid'])) {
                                 echo SuccessMessage(); ?>
                                 <div class="main-card mb-3 card">
                                     <div class="card-body">
-                                        <h5 class="card-title">Room Setup Form</h5>
+                                        <h5 class="card-title">Appointment Type Setup Form</h5>
                                         <form action="" method="POST">
                                             <div class="position-relative form-group">
-                                                <label>Room Type</label>
-                                                <input name="roomtype" id="roomtype" value="<?php if (isset($_GET['editid'])) echo $rsedit['departmentName']; ?>" type="text" class="form-control" />
-
-                                                <label>Number Of Beds</label>
-                                                <input name="roomno" id="roomno" value="<?php if (isset($_GET['editid'])) echo $rsedit['departmentName']; ?>" type="text" class="form-control" />
-
-                                                <label>Room Number</label>
-                                                <input name="noofbeds" id="noofbeds" value="<?php if (isset($_GET['editid'])) echo $rsedit['departmentName']; ?>" type="text" class="form-control" />
-
-                                                <label>Room Tarriff</label>
-                                                <input name="room_tariff" id="room_tariff" value="<?php if (isset($_GET['editid'])) echo $rsedit['departmentName']; ?>" type="text" class="form-control" />
+                                                <label>Appointment Type Name</label>
+                                                <input name="appointmentTypeName" id="appointmentTypeName" value="<?php if (isset($_GET['editid'])) echo $rsedit['appointmentTypeName']; ?>" placeholder="Enter type" type="text" class="form-control" />
 
                                                 <label>Status</label>
                                                 <select class="mb-2 form-control" name="status" id="status" value="<?php if (isset($_GET['editid'])) echo $rsedit['status']; ?>">
@@ -143,10 +131,8 @@ if (isset($_GET['editid'])) {
                                         <table style="width: 100%;" id="example" class="table table-hover table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>Room Type</th>
-                                                    <th>Room No</th>
-                                                    <th>Number Of beds</th>
-                                                    <th>Room Tariff</th>
+                                                    <th>Edit</th>
+                                                    <th>Appointment Type Name</th>
                                                     <th>Status</th>
                                                     <th></th>
                                                 </tr>
@@ -154,19 +140,23 @@ if (isset($_GET['editid'])) {
                                             <tbody>
                                                 <?php
                                                 global $db_connect;
-                                                $query = "SELECT * FROM room ORDER BY id desc";
+                                                $query = "SELECT * FROM appointment_type_tbl ORDER BY id desc";
                                                 $Execute = mysqli_query($db_connect, $query);
                                                 while ($rs = mysqli_fetch_array($Execute)) {
                                                     echo "
                                                         <tr>
-                        
-                                                            <td>&nbsp;$rs[roomtype]</td>
-                                                            <td>&nbsp;$rs[roomno]</td>
-                                                            <td>&nbsp;$rs[noofbeds]</td>
-                                                            <td>&nbsp;$rs[room_tariff]</td>
+                                                            <td>
+                                                            <a href='addAppointmentType.php?editid=$rs[id]'>
+                                                                <button class='btn btn-info btn-sm float-left'>
+                                                                    <i class='fa fa-edit'></i>
+                                                                </button>
+                                                                </a>
+                                                            </td>
+                                                            <td>&nbsp;$rs[appointmentTypeName]</td>
+                                                       
                                                             <td>&nbsp;$rs[status]</td>
                                                             <td>                         
-                                                                 <a href='addRoom.php?delid=$rs[id]'>
+                                                                 <a href='addAppointmentType.php?delid=$rs[id]'>
                                                                  <button class='btn btn-danger btn-sm float-right'>
                                                                      <i class='fa fa-trash'></i>
                                                                  </button>

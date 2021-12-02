@@ -15,12 +15,8 @@
 <body>
     <div class="app-header header-shadow">
         <div class="app-header__logo">
-            <!-- <div class="logo-src"></div> -->
-            <?php
-            echo '
-            <img src="./logo-inverse.png" />
-            ';
-            ?>
+            <div class="logo-src">
+            </div>
             <div class="header__pane ml-auto">
                 <div>
                     <button type="button" class="hamburger close-sidebar-btn hamburger--elastic" data-class="closed-sidebar">
@@ -48,6 +44,7 @@
                     </span>
                 </button>
             </span>
+          
         </div>
         <div class="app-header__content">
             <div class="app-header-left">
@@ -90,8 +87,8 @@
                                         <i class="fa fa-angle-down ml-2 opacity-8"></i>
                                     </a>
                                     <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
-                                        <button type="button" tabindex="0" class="dropdown-item"><a href="adminProfile.php" class="nav-link">User Account</a></button>
-                                        <button type="button" tabindex="0" class="dropdown-item"><a href="addDepartment.php" class="nav-link">Settings</a></button>
+                                        <button type="button" tabindex="0" class="dropdown-item"><a href="Profile.php" class="nav-link">User Account</a></button>
+                                        <!-- <button type="button" tabindex="0" class="dropdown-item"><a href="addDepartment.php" class="nav-link">Settings</a></button> -->
                                         <button type="button" tabindex="0" class="dropdown-item"><a href="changePassword.php" class="nav-link">Change Password</a></button>
                                         <a href="signOut.php" class="nav-link"><button type="button" class="btn btn-danger btn-block mb-0">Sign Out</button></a>
                                     </div>
@@ -100,17 +97,17 @@
                             <div class="widget-content-left ml-3 header-user-info">
                                 <?php
                                 global $db_connect;
-                                $query = "SELECT * FROM admin_tbl WHERE id='$_SESSION[id]'";
+                                $query = "SELECT * FROM nurse_tbl WHERE id='$_SESSION[id]'";
                                 $Execute = mysqli_query($db_connect, $query);
                                 while ($row = mysqli_fetch_array($Execute)) {
                                     echo " <div class='widget-heading text-capitalize'>
-                                            $row[firstname]
+                                            $row[nurseFirstname]
                                             </div>
                                 ";
                                 }
                                 ?>
                                 <div class="widget-subheading">
-                                    Adminstrator
+                                    Nurse
                                 </div>
 
                             </div>

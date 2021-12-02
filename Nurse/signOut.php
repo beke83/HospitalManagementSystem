@@ -5,6 +5,6 @@
 $_SESSION["id"] =  null;
 //kill a session
 session_destroy();
-Redirect_to("adminLogin.php");
+Redirect_to("nurseLogin.php");
 
 ?>

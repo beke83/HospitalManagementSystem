@@ -8,18 +8,23 @@ if (isset($_GET['delid'])) {
     $query = "DELETE FROM appointment_tbl WHERE id='$_GET[delid]'";
     $execute = mysqli_query($db_connect, $query);
     if (mysqli_affected_rows($db_connect) == 1) {
-        $_SESSION["SuccessMessage"] = "Appointment Deleted";
-        Redirect_to("viewAppointmentApproval.php");;
+        $_SESSION["SuccessMessage"] = "Appointment deleted successfully";
+        Redirect_to("viewPendingAppointment.php");;
     }
 }
+
 if (isset($_GET['approveid'])) {
+    $query = "UPDATE patient_tbl SET status='Active' WHERE id='$_GET[patientid]'";
+    $execute = mysqli_query($db_connect, $query);
+
     $query = "UPDATE appointment_tbl SET status='Approved' WHERE id='$_GET[approveid]'";
     $execute = mysqli_query($db_connect, $query);
     if (mysqli_affected_rows($db_connect) == 1) {
-        $_SESSION["SuccessMessage"] = "Appointment Approved";
-        Redirect_to("appointmentApproval.php");;
+        echo "<script>alert('Appointment record Approved successfully..');</script>";
+        echo "<script>window.location='viewPendingAppointment.php';</script>";
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +33,7 @@ if (isset($_GET['approveid'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Approved Appointment</title>
+    <title>Add New Appointment</title>
 
     <link rel="stylesheet" href="../assets/main.d810cf0ae7f39f28f336.css">
 </head>
@@ -46,7 +51,7 @@ if (isset($_GET['approveid'])) {
                                 <div class="page-title-icon">
                                     <i class="pe-7s-medal icon-gradient bg-tempting-azure"></i>
                                 </div>
-                                <div>Approved Appointments
+                                <div>Pending Appointment
                                 </div>
                             </div>
                         </div>
@@ -54,30 +59,27 @@ if (isset($_GET['approveid'])) {
                     <div class="tab-content">
                         <div class="row">
                             <div class="col-md-12">
+                                <?php echo Message();
+                                echo SuccessMessage(); ?>
                                 <div class="main-card mb-3 card">
                                     <div class="card-body">
-                                        <table style="width: 100" id="example" class="table table-hover table-striped table-bordered">
+                                        <table style="width: 100%;" id="example" class="table table-hover table-striped table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th>Patient detail</th>
-                                                    <th>Registration Date & Time</th>
-                                                    <th>Department</th>
-                                                    <th>Doctor</th>
-                                                    <th>Appointment Reason</th>
-                                                    <th>Status</th>
-                                                    <th>
-                                                        <div align="center">Action</div>
-                                                    </th>
+                                                    <th width="40px">Patient detail</th>
+                                                    <th width="150px">Appointment Date/Time</th>
+                                                    <th width="150px">Doctor</th>
+                                                    <th width="150px">Department</th>
+                                                    <th width="250px">Appointment Reason</th>
+                                                    <th width="100px">Status</th>
+                                                    <th style=" width: 250px;">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php
-                                                $query = "SELECT * FROM appointment_tbl WHERE (status='Approved' OR status='Active')";
+                                                $query = "SELECT * FROM appointment_tbl WHERE (status='Pending' OR status='Forwarded to Doctor') ORDER BY id desc";
                                                 if (isset($_SESSION['patientid'])) {
                                                     $query  = $query . " AND patientid='$_SESSION[patientid]'";
-                                                }
-                                                if (isset($_SESSION['doctorid'])) {
-                                                    $query  = $query . " AND doctorid='$_SESSION[doctorid]'";
                                                 }
                                                 $execute = mysqli_query($db_connect, $query);
                                                 while ($rs = mysqli_fetch_array($execute)) {
@@ -94,21 +96,36 @@ if (isset($_GET['approveid'])) {
                                                     $executedoc = mysqli_query($db_connect, $querydoc);
                                                     $rsdoc = mysqli_fetch_array($executedoc);
                                                     echo "<tr>
-         
-                                                        <td>&nbsp;$rspat[firstname] - $rspat[lastname]<br>&nbsp;$rspat[phoneNumber]</td>		 
-                                                        <td>&nbsp;$rs[appointmentdate]&nbsp;$rs[appointmenttime]</td> 
-                                                        <td>&nbsp;$rsdept[departmentName]</td>
-                                                        <td>&nbsp;$rsdoc[doctorLastname]</td>
-                                                        <td>&nbsp;$rs[app_reason]</td>
-                                                        <td>&nbsp;$rs[status]</td>
-                                                        <td><div align='center'>";
+                                            
+                                                            
+          <td>&nbsp;$rspat[firstname]<br>&nbsp;$rspat[phoneNumber]</td>		 
+			 <td>&nbsp;" . date("d-M-Y", strtotime($rs['appointmentdate'])) . " &nbsp; " . date("H:i A", strtotime($rs['appointmenttime'])) . "</td> 
+             <td>&nbsp;$rsdoc[doctorFirstname] $rsdoc[doctorLastname]</td>
+             <td>&nbsp;$rsdept[departmentName]</td>
+			    <td>&nbsp;$rs[app_reason]</td>
+			    <td>&nbsp;$rs[status]</td>
+          <td><div align='center'>";
                                                     if ($rs['status'] != "Approved") {
                                                         if (!(isset($_SESSION['patientid']))) {
-                                                            echo "<a href='appointmentapproval.php?editid=$rs[id]'>Approve</a><hr>";
+
+                                                            echo "
+                                                                <a href= 'appointmentApproval.php?editid=$rs[id]&patientid=$rs[patientid]'>
+                                                                <button class='btn btn-info btn-sm float-left'>
+                                                                    Approve
+                                                                </button>
+                                                                </a>
+                                                            ";
                                                         }
-                                                        echo "  <a href='viewApprovedAppointment.php?delid=$rs[id]'>Delete</a>";
+                                                        echo "
+                                                                <a href= 'forwardAppointment.php?editid=$rs[id]&patientid=$rs[patientid]'>
+                                                                <button class='btn btn-primary btn-sm float-right'>
+                                                                    Forward to doctor
+                                                                </button>
+                                                                </a>
+                                                            ";
+
                                                     } else {
-                                                        echo "<a href='patientreport.php?patientid=$rs[patientid]&id=$rs[id]'><button type='submit' class='btn btn-primary'>View Report</button></a>";
+                                                        echo "<a href='patientreport.php?patientid=$rs[patientid]&appointmentid=$rs[appointmentid]'>View Report</a>";
                                                     }
                                                     echo "</center></td></tr>";
                                                 }

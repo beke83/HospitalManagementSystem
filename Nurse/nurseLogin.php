@@ -5,7 +5,7 @@
 
 <?php
 if (isset($_SESSION['emailAddress'])) {
-    Redirect_to("adminLogin.php");
+    Redirect_to("nurseLogin.php");
 }
 ?>
 
@@ -16,12 +16,12 @@ if (isset($_POST["submit"])) {
 
     if (empty($emailAddress) || empty($password)) {
         $_SESSION["ErrorMessage"] = "All Field must be Filled";
-        Redirect_to("adminLogin.php");
+        Redirect_to("nurseLogin.php");
     } elseif (strlen($password) < 4) {
         $_SESSION["ErrorMessage"] = "Atleast 6 character for password";
-        Redirect_to("adminLogin.php");
+        Redirect_to("nurseLogin.php");
     } else {
-        $query = "SELECT * FROM admin_tbl WHERE emailAddress='$_POST[emailAddress]' AND password='$_POST[password]' AND status='Active'";
+        $query = "SELECT * FROM nurse_tbl WHERE emailAddress='$_POST[emailAddress]' AND password='$_POST[password]' AND status='Active'";
         $Execute = mysqli_query($db_connect, $query);
         if (mysqli_num_rows($Execute) == 1) {
             $rslogin = mysqli_fetch_array($Execute);
@@ -29,7 +29,7 @@ if (isset($_POST["submit"])) {
             Redirect_to("dashboard.php");
         } else {
             $_SESSION["ErrorMessage"] = "Invalid email/password";
-            Redirect_to("adminLogin.php");
+            Redirect_to("nurseLogin.php");
         }
     }
 }
@@ -46,7 +46,7 @@ if (isset($_POST["submit"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title>Nurse Login</title>
     <link rel="stylesheet" href="../assets/main.d810cf0ae7f39f28f336.css">
 
     <style>
@@ -60,7 +60,7 @@ if (isset($_POST["submit"])) {
         }
 
         .log {
-            background-image: url("../assets/images/b2.jpg");
+            background-image: url("../assets/images/b4.jpg");
             overflow: hidden;
         }
 
@@ -181,15 +181,14 @@ if (isset($_POST["submit"])) {
                                 <div class="modal-body">
                                     <div class="h5 modal-title text-center">
                                         <h4 class="mt-2">
-                                            <div>Welcome back, <b>Admin</b></div>
                                             <span>Please sign in to your account below.</span>
                                         </h4>
                                     </div>
-                                    <form action="adminLogin.php" method="POST">
+                                    <form action="nurseLogin.php" method="POST">
                                         <div class="form-row">
                                             <div class="col-md-12">
                                                 <div class="position-relative form-group">
-                                                    <input name="emailAddress" id="emailAddress" placeholder="Email here..." type="email" class="c">
+                                                    <input name="emailAddress" id="emailAddress" placeholder="Email here..." type="email" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
@@ -204,11 +203,10 @@ if (isset($_POST["submit"])) {
                                         </div>
 
                                         <div class="divider"></div>
-                                        <h6 class="mb-0">No account? <a href="javascript:void(0);" class="text-primary">Sign up now</a></h6>
                                 </div>
                                 <div class="modal-footer clearfix">
                                     <div class="float-left">
-                                        <a href="javascript:void(0);" class="btn-lg btn btn-link">Recover Password</a>
+                                        <a href="javascript:void(0);" class="forgotPassword.php">Recover Password</a>
                                     </div>
                                     <div class="float-right">
                                         <button class="btn btn-primary btn-lg" name="submit" type="submit">Login</button>
@@ -217,7 +215,7 @@ if (isset($_POST["submit"])) {
                                 </form>
                             </div>
                         </div>
-                        <div class="text-center text-white opacity-8 mt-3">Copyright © HMS 2020</div>
+                        <div class="text-center text-white opacity-8 mt-3">Copyright © HMS 2021</div>
                     </div>
                 </div>
             </div>

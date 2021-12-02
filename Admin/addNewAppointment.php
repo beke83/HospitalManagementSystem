@@ -13,9 +13,10 @@ if (isset($_POST['submit'])) {
     $Doctor = mysqli_real_escape_string($db_connect, $_POST["doctor"]);
     $ReasonOfAppointment = mysqli_real_escape_string($db_connect, $_POST["app_reason"]);
     $Status = mysqli_real_escape_string($db_connect, $_POST["status"]);
+    $EmailAddress = mysqli_real_escape_string($db_connect, $_POST["emailAddress"]);
 
     if (isset($_GET['editid'])) {
-        $query = "UPDATE appointment_tbl SET patientid='$_POST[select4]',departmentid='$_POST[select5]',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[time]',doctorid='$_POST[select6]',status='$_POST[select]' WHERE appointmentid='$_GET[editid]'";
+        $query = "UPDATE appointment_tbl SET patientid='$_POST[select4]',departmentid='$_POST[select5]',appointmentdate='$_POST[appointmentdate]',appointmenttime='$_POST[time]',doctorid='$_POST[select6]', emailAddres='$_POST[emailAddress], status='$_POST[select]' WHERE appointmentid='$_GET[editid]'";
         if ($execute = mysqli_query($con, $query)) {
             echo "<script>alert('appointment record updated successfully...');</script>";
         } else {
@@ -33,13 +34,13 @@ if (isset($_POST['submit'])) {
         $query = "UPDATE patient_tbl SET status='Active' WHERE id='$_POST[patient]'";
         $execute = mysqli_query($db_connect, $query);
 
-        $query = "INSERT INTO appointment_tbl(patientid, departmentid, appointmentdate, appointmenttime, doctorid, app_reason,status) 
-        VALUES('$Patient','$Department','$DateOfAppointment','$TimeOfAppointment','$Doctor','$ReasonOfAppointment','$Status')";
+        $query = "INSERT INTO appointment_tbl(patientid, departmentid, appointmentdate, appointmenttime, doctorid, app_reason,status,patientemail) 
+        VALUES('$Patient','$Department','$DateOfAppointment','$TimeOfAppointment','$Doctor','$ReasonOfAppointment','$Status','$EmailAddress')";
         if ($execute = mysqli_query($db_connect, $query)) {
 
             //include("insertbillingrecord.php");
             $_SESSION["SuccessMessage"] = "Appointment record inserted successfullyy";
-            Redirect_to("addNewAppointment.php");
+            Redirect_to("viewPendingAppointment.php");
             //Redirect_to("patientreport.php?patientid=$_POST[patient]");
         } else {
             $_SESSION["ErrorMessage"] = mysqli_error($db_connect);
@@ -71,7 +72,7 @@ if (isset($_POST['submit'])) {
             <?php include("./layout/sidebar.php"); ?>
             <div class="app-main__outer">
                 <div class="app-main__inner">
-                    <div class="app-page-title">
+                    <!-- <div class="app-page-title">
                         <div class="page-title-wrapper">
                             <div class="page-title-heading">
                                 <div class="page-title-icon">
@@ -92,7 +93,7 @@ if (isset($_POST['submit'])) {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="tab-content">
                         <div class="row">
                             <div class="col-md-12">
@@ -178,6 +179,42 @@ if (isset($_POST['submit'])) {
 
                                                 <label>Reason</label>
                                                 <textarea name="app_reason" class="form-control"></textarea>
+
+
+                                                <div class="col-md-12">
+                                                    <label>Patient Email</label>
+                                                    <?php
+                                                    if (isset($_GET['patientid'])) {
+                                                        $querypatient = "SELECT * FROM patient_tbl WHERE id='$_GET[patientid]'";
+                                                        $executepatient = mysqli_query($db_connect, $querypatient);
+                                                        $rspatient = mysqli_fetch_array($executepatient);
+                                                        //echo $rspatient['firstname'] . $rspatient['lastname'] . " (Patient ID - $rspatient[id])";
+                                                        // echo "<input type='hidden' name='patient' value='$rspatient[id]'>";
+                                                        echo "
+                                                                <select class='mb-2 form-control' name='emailAddress'>
+                                                                    <option value='$rspatient[emailAddress]' selected>$rspatient[emailAddress]</option>
+                                                                </select>
+                                                            ";
+                                                    } else {
+                                                    ?>
+                                                        <select class="mb-2 form-control" name="emailAddress">
+                                                            <option value="">Select</option>
+                                                            <?php
+                                                            $querypatient = "SELECT * FROM patient_tbl WHERE status='Active'";
+                                                            $executepatient = mysqli_query($db_connect, $querypatient);
+                                                            while ($rspatient = mysqli_fetch_array($executepatient)) {
+                                                                if ($rspatient['id'] == $rsedit['patientid']) {
+                                                                    echo "<option value='$rspatient[emailAddress]' selected>$rspatient[emailAddress]</option>";
+                                                                } else {
+                                                                    echo "<option value='$rspatient[emailAddress]'>$rspatient[emailAddress]</option>";
+                                                                }
+                                                            }
+                                                            ?>
+                                                        </select>
+
+                                                    <?php } ?>
+                                                </div>
+
 
                                                 <label>Status</label>
                                                 <select class="mb-2 form-control" name="status" id="status">

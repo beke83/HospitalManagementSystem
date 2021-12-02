@@ -59,15 +59,9 @@
                         </a>
                         <ul>
                             <li>
-                                <a href="addAdmin.php">
+                                <a href="profile.php">
                                     <i class="metismenu-icon"></i>
-                                    Add Admin
-                                </a>
-                            </li>
-                            <li>
-                                <a href="adminProfile.php">
-                                    <i class="metismenu-icon"></i>
-                                    Admin Profile
+                                    Profile
                                 </a>
                             </li>
                             <li>
@@ -95,7 +89,7 @@
                             <li>
                                 <a href="viewPatient.php">
                                     <i class="metismenu-icon"></i>
-                                    View Patient Records
+                                    View Patients
                                 </a>
                             </li>
                         </ul>
@@ -110,7 +104,7 @@
                             <li>
                                 <a href="addNewAppointment.php">
                                     <i class="metismenu-icon"></i>
-                                    Add Appointment
+                                    Add New Appointment
                                 </a>
                             </li>
                             <li>
@@ -127,96 +121,18 @@
                             </li>
                         </ul>
                     </li>
+                    
                     <li>
-                        <a href="#">
-                            <i class="metismenu-icon pe-7s-user"></i>
-                            Staff
-                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                        <a href="consultancyCharge.php">
+                            <i class="metismenu-icon pe-7s-cash"></i>
+                            Income Report
                         </a>
-                        <ul>
-                            <li>
-                                <a href="addDoctor.php">
-                                    <i class="metismenu-icon"></i>
-                                    Add Doctor
-                                </a>
-                            </li>
-                            <li>
-                                <a href="viewDoctor.php">
-                                    <i class="metismenu-icon"></i>
-                                    View Doctor
-                                </a>
-                            </li>
-                            <li>
-                                <a href="addDoctorTiming.php">
-                                    <i class="metismenu-icon"></i>
-                                    Add Doctor Timings
-                                </a>
-                            </li>
-                            <li>
-                                <a href="addNurse.php">
-                                    <i class="metismenu-icon"></i>
-                                    Add Nurse
-                                </a>
-                            </li>
-                            <li>
-                                <a href="viewNurse.php">
-                                    <i class="metismenu-icon"></i>
-                                    View Nurse
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="viewTreatmentRecord.php">
-                            <i class="metismenu-icon pe-7s-display2"></i>
-                            Treatment Records
-                        </a>
-                    </li>
-                    <li class="app-sidebar__heading">Settings</li>
-                    <li>
-                        <a href="#">
-                            <i class="metismenu-icon pe-7s-config"></i>
-                            Setup
-                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
-                        </a>
-                        <ul>
-                            <li>
-                                <a href="addDepartment.php">
-                                    <i class="metismenu-icon"></i>
-                                    Department
-                                </a>
-                            </li>
-                            <li>
-                                <a href="addTreatmentType.php">
-                                    <i class="metismenu-icon"></i>
-                                    Treatment Type
-                                </a>
-                            </li>
-                            <li>
-                                <a href="addMedicine.php">
-                                    <i class="metismenu-icon"></i>
-                                    Medicine
-                                </a>
-                            </li>
-                            <li>
-                                <a href="addAppointmentType.php">
-                                    <i class="metismenu-icon"></i>
-                                    Appointment Type
-                                </a>
-                            </li>
-                            <li>
-                                <a href="addRoom.php">
-                                    <i class="metismenu-icon"></i>
-                                    Room
-                                </a>
-                            </li>
-                        </ul>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="../assets/scripts/main.d810cf0ae7f39f28f336.js"></script>
+    <script type="text/javascript" src="../assets/scripts/main.js"></script>
 </body>
 
 </html>
