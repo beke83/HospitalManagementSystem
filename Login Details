@@ -1,0 +1,18 @@
+ *** Admin Login***
+email: admin@yahoo.com
+password: admin
+
+*************************
+Patient Login
+email: patient@yahoo.com
+password: patient
+
+*************************
+Doctor Login
+email: doctor@yahoo.com
+password: doctor
+
+*************************
+Nurse Login
+email: nurse@yahoo.com
+password: nurse
